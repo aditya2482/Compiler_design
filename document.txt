@@ -1,0 +1,6 @@
+Designing compiler to gain more understanding of how coding works
+A program doesnt get read character by character
+
+Tokens - character with identifiers are known as tokens
+lexer - creates word.
+parser - creates sentences of those words in form of tree.
