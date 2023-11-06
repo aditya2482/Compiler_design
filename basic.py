@@ -2,7 +2,7 @@
 # TOKENS - words represented by type:value ie [int:123]
 ###########
 
-TT_int = "int"
+TT_int = "int" # Token Type
 TT_float = "float"
 TT_str = "str"
 TT_plus = "plus"
@@ -26,4 +26,9 @@ class tokens:
 ###########################
 # Lexer
 ###########################
+
+class lexer:
+    def __init__(self,text):
+        self.text = text
+        
 
