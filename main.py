@@ -1,4 +1,10 @@
+import basic
+
+
 while (True):
-    line = input("aditya_compiler>")
-    print(line)
-    
+    text = input("aditya_compiler>")
+    final,error = basic.run(text)
+    if error:print(error.as_string())
+    else:
+        print(final)
+

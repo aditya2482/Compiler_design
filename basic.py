@@ -2,20 +2,32 @@
 # Digits
 ######
 
-digits = "01234567890"
+digits = '1234567890'
+
+
+########
+strings = 'qwertyuiopasdfghjklzxcvbnm'
+#######
+
+
 
 ########
 # Error
 ########
 
-class errors:
+class Error:
     def __init__(self,error_details,error_name):
         self.error_details = error_details
         self.error_name = error_name
 
-    def __repr__(self):
+    def as_string(self):
         return f"Encountered {self.error_name} -- {self.error_details}"
 
+
+class IllegalTokens(Error):
+    def __init__(self,details):
+        self.dets = details
+        super().__init__("(-) Illegal Token recieved",self.dets)
 
 ###########
 # TOKENS - words represented by type:value ie [int:123]
@@ -32,8 +44,9 @@ TT_lparanthesis = "lparanthesis"
 TT_rparanthesis = "rparanthesis"
 
 
-class tokens:
-    def __init__(self,type_,value):
+
+class token:
+    def __init__(self,type_,value=None):
         self.type = type_
         self.value = value
 
@@ -51,7 +64,7 @@ class lexer:
         self.text = text
         self.pos = -1
         self.current_char = None
-
+        self.advance()
     
     def advance(self):
         self.pos +=1
@@ -65,35 +78,39 @@ class lexer:
             elif self.current_char in "/n":
                 self.advance()
             elif self.current_char == "+":
-                tokens.append(tokens(TT_plus))
+                tokens.append(token(TT_plus))
                 self.advance()
             elif self.current_char == "-":
-                tokens.append(tokens(TT_minus))
+                tokens.append(token(TT_minus))
                 self.advance()
             elif self.current_char == "/":
-                tokens.append(tokens(TT_divide))
+                tokens.append(token(TT_divide))
                 self.advance()
             elif self.current_char == "*":
-                tokens.append(tokens(TT_multiply))
+                tokens.append(token(TT_multiply))
                 self.advance()
             elif self.current_char == "(":
-                tokens.append(tokens(TT_lparanthesis))
+                tokens.append(token(TT_lparanthesis))
                 self.advance()
             elif self.current_char == ")":
-                tokens.append(tokens(TT_rparanthesis))
+                tokens.append(token(TT_rparanthesis))
                 self.advance()
             elif self.current_char in digits:
                 tokens.append(self.make_digits())
-                self.advance()
+                # self.advance()
+            elif self.current_char in strings:
+                tokens.append(self.make_str())
             else:
-                print()
-                # if any uniden character present - will raise error
-            
+                current_token = self.current_char
+                self.advance()
+                return [],IllegalTokens(""+current_token+"")
+        
+        return tokens,None
 
     def make_digits(self):
         num_str = ''
         dot_count = 0
-        while self.current_char in digits +'.' and self.current_char != None:
+        while self.current_char != None and self.current_char in digits + ".":
             if self.current_char == ".":
                 if dot_count == 1:
                     break
@@ -103,23 +120,27 @@ class lexer:
             else:
                 num_str+=self.current_char
             self.advance()
-            
 
-            if dot_count == 0:
-                return tokens(TT_int,int(num_str))
-            else:
-                return tokens(TT_float,float(num_str))
+        if dot_count == 0:
+            return token(TT_int,int(num_str))
+        else:
+            return token(TT_float,float(num_str))
+        
+    def make_str(self):
+        inp_str = ''
+        while self.current_char != None and self.current_char in strings:
+            inp_str += self.current_char
+            self.advance()
 
+        return token(TT_str,inp_str)
 
+        
+###############
+# Run
+##############
 
+def run(text):
+    lex = lexer(text)
+    tokensx,error = lex.make_token()
 
-
-
-
-
-
-        return tokens
-
-
-
-    
+    return tokensx, error
